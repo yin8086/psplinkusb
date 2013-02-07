@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/modload.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/modload.c $
  * $Id: modload.c 2157 2007-01-29 22:50:26Z tyranid $
  */
 #include <pspkernel.h>

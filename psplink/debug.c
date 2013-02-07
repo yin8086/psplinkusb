@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/debug.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/debug.c $
  * $Id: debug.c 2301 2007-08-26 13:48:05Z tyranid $
  */
 #include <pspkernel.h>
@@ -56,7 +56,7 @@ static struct Breakpoint g_bps[DEBUG_MAX_BPS];
 static struct _DebugEventHandler* g_eventhead;
 extern const char *regName[32];
 
-static void debug_set_hwbreak(unsigned int addr);
+static void debug_set_hwbreak(unsigned int addr, unsigned int flag);
 
 int debugRegisterEventHandler(DebugEventHandler *handler)
 {
@@ -191,88 +191,81 @@ static void step_generic(struct PsplinkContext *ctx, int skip)
 		case BLEZ_OPCODE:
 		case BLEZL_OPCODE: 
 		case BNE_OPCODE:
-		case BNEL_OPCODE:
-						    {
-							   short ofs;
-
-							   ofs = (short) (opcode & 0xffff);
-							   cond = 1;
-							   branch = 1;
-							   targetpc += ofs * 4;
-						   }
-						   break;
-		case REGIMM_OPCODE: {
-								switch((opcode >> 16) & 0x1f)
-								{
-									case BGEZ_OPCODE:
-									case BGEZAL_OPCODE:
-									case BGEZALL_OPCODE:	
-									case BGEZL_OPCODE:
-									case BLTZ_OPCODE:
-									case BLTZAL_OPCODE:
-									case BLTZALL_OPCODE:
-									case BLTZL_OPCODE: {
-														   short ofs;
-
-														   ofs = (short) (opcode & 0xffff);
-														   cond = 1;
-														   branch = 1;
-														   targetpc += ofs * 4;
-													   }
-													   break;
-								}
-						    }
-							break;
+		case BNEL_OPCODE:{
+			short ofs;
+			ofs = (short) (opcode & 0xffff);
+			cond = 1;
+			branch = 1;
+			targetpc += ofs * 4;
+		}
+		break;
+		case REGIMM_OPCODE:{
+			switch((opcode >> 16) & 0x1f)
+			{
+				case BGEZ_OPCODE:
+				case BGEZAL_OPCODE:
+				case BGEZALL_OPCODE:	
+				case BGEZL_OPCODE:
+				case BLTZ_OPCODE:
+				case BLTZAL_OPCODE:
+				case BLTZALL_OPCODE:
+				case BLTZL_OPCODE: {
+					short ofs;
+					ofs = (short) (opcode & 0xffff);
+					cond = 1;
+					branch = 1;
+					targetpc += ofs * 4;
+			   }
+			   break;
+			}
+	    }
+			break;
 		case JAL_OPCODE:	link = 1;
 		case J_OPCODE: {
-							 unsigned int ofs;
-							 
-							 ofs = opcode & 0x3ffffff;
-							 targetpc = (ofs << 2) | (targetpc & 0xf0000000);
-							 branch = 1;
-							 cond = 0;
-						 }
-						 break;
-		case SPECIAL_OPCODE:
-						 {
-							 switch(opcode & 0x3f)
-							 {
-								 case JALR_OPCODE: link = 1;
-								 case JR_OPCODE:
-												 {
-													 unsigned int rs;
-
-													 rs = (opcode >> 21) & 0x1f;
-													 targetpc = ctx->regs.r[rs];
-													 branch = 1;
-													 cond = 0;
-												 }
-												 break;
-							 };
-						 }
-						 break;
+			 unsigned int ofs;
+			 
+			 ofs = opcode & 0x3ffffff;
+			 targetpc = (ofs << 2) | (targetpc & 0xf0000000);
+			 branch = 1;
+			 cond = 0;
+		}
+		break;
+		case SPECIAL_OPCODE:{
+			 switch(opcode & 0x3f)
+			 {
+				 case JALR_OPCODE: link = 1;
+				 case JR_OPCODE:
+				 {
+					 unsigned int rs;
+					 rs = (opcode >> 21) & 0x1f;
+					 targetpc = ctx->regs.r[rs];
+					 branch = 1;
+					 cond = 0;
+				 }
+				 break;
+			 };
+		}
+		break;
 		case COP0_OPCODE:
 		case COP1_OPCODE:
-		case COP2_OPCODE:
-						 {
-							 switch((opcode >> 16) & 0x3ff)
-							 {
-								 case BCXF_OPCODE:
-								 case BCXFL_OPCODE:
-								 case BCXT_OPCODE:
-								 case BCXTL_OPCODE:
-									 				{
-														short ofs;
-
-														ofs = (short) (opcode & 0xffff);
-														cond = 1;
-														branch = 1;
-														targetpc += ofs * 4;
-													}
-													break;
-							 };
-						 }
-						 break;
+		case COP2_OPCODE: {
+			 switch((opcode >> 16) & 0x3ff)
+			 {
+				case BCXF_OPCODE:
+				case BCXFL_OPCODE:
+				case BCXT_OPCODE:
+				case BCXTL_OPCODE:
+ 				{
+					short ofs;
+					ofs = (short) (opcode & 0xffff);
+					cond = 1;
+					branch = 1;
+					targetpc += ofs * 4;
+				}
+				break;
+			};
+		}
+		break;
 	};
 
 	if(link && skip)
@@ -319,10 +312,8 @@ static struct Breakpoint *find_bp(unsigned int address)
 	/* Mask out top nibble so we match whether we end up in kmem,
 	 * user mem or cached mem */
 	address &= 0x0FFFFFFF;
-	for(i = 0; i < DEBUG_MAX_BPS; i++)
-	{
-		if((g_bps[i].flags & DEBUG_BP_ACTIVE) && ((g_bps[i].addr & 0x0FFFFFFF) == address))
-		{
+	for(i = 0; i < DEBUG_MAX_BPS; i++){
+		if((g_bps[i].flags & DEBUG_BP_ACTIVE) && ((g_bps[i].addr & 0x0FFFFFFF) == address)){
 			return &g_bps[i];
 		}
 	}
@@ -330,14 +321,12 @@ static struct Breakpoint *find_bp(unsigned int address)
 	return NULL;
 }
 
-static struct Breakpoint *find_hwbp(void)
+static struct Breakpoint *find_hwbp(unsigned int flags)
 {
 	int i;
 
-	for(i = 0; i < DEBUG_MAX_BPS; i++)
-	{
-		if((g_bps[i].flags & DEBUG_BP_ACTIVE) && (g_bps[i].flags & DEBUG_BP_HARDWARE))
-		{
+	for(i = 0; i < DEBUG_MAX_BPS; i++){
+		if((g_bps[i].flags & DEBUG_BP_ACTIVE) && (g_bps[i].flags & flags)){
 			return &g_bps[i];
 		}
 	}
@@ -348,10 +337,8 @@ static struct Breakpoint *find_hwbp(void)
 static struct Breakpoint *find_freebp(void)
 {
 	int i;
-	for(i = 0; i < DEBUG_MAX_BPS; i++)
-	{
-		if((g_bps[i].flags & DEBUG_BP_ACTIVE) == 0)
-		{
+	for(i = 0; i < DEBUG_MAX_BPS; i++){
+		if((g_bps[i].flags & DEBUG_BP_ACTIVE) == 0){
 			return &g_bps[i];
 		}
 	}
@@ -361,31 +348,22 @@ static struct Breakpoint *find_freebp(void)
 
 struct Breakpoint* debugSetBP(unsigned int address, unsigned int flags, SceUID thid)
 {
-	if(find_bp(address) == NULL)
-	{
+	if(find_bp(address) == NULL){
 		struct Breakpoint *pBp = NULL;
-
-		if(flags & DEBUG_BP_HARDWARE)
-		{
-			/* Check for existing hardware breakpoint */
-			if(find_hwbp())
-			{
+		if(flags & BP_HARDWARE_MASK){
+			if(find_hwbp(flags)){
 				return NULL;
 			}
 		}
 
 		pBp = find_freebp();
-		if(pBp != NULL)
-		{
+		if(pBp != NULL){
 			memset(pBp, 0, sizeof(struct Breakpoint));
 			pBp->inst = _lw(address);
 
-			if(flags & DEBUG_BP_HARDWARE)
-			{
-				debug_set_hwbreak(address);
-			}
-			else
-			{
+			if(flags & BP_HARDWARE_MASK){
+				debug_set_hwbreak(address, flags);
+			}else{
 				_sw(SW_BREAK_INST, address);
 			}
 
@@ -396,9 +374,7 @@ struct Breakpoint* debugSetBP(unsigned int address, unsigned int flags, SceUID t
 			sceKernelIcacheInvalidateAll();
 
 			return pBp;
-		}
-		else
-		{
+		}else{
 			SHELL_PRINT("Error, could not find a free breakpoint\n");
 		}
 	}
@@ -408,10 +384,8 @@ struct Breakpoint* debugSetBP(unsigned int address, unsigned int flags, SceUID t
 
 struct Breakpoint* debugFindBPByIndex(int i)
 {
-	if((i >= 0) && (i < DEBUG_MAX_BPS))
-	{
-		if(g_bps[i].flags & DEBUG_BP_ACTIVE)
-		{
+	if((i >= 0) && (i < DEBUG_MAX_BPS)){
+		if(g_bps[i].flags & DEBUG_BP_ACTIVE){
 			return &g_bps[i];
 		}
 	}
@@ -427,15 +401,11 @@ int debugDeleteBP(unsigned int addr)
 
 	intc = pspSdkDisableInterrupts();
 	pBp = find_bp(addr);
-	if(pBp)
-	{
-		if((pBp->flags & DEBUG_BP_HARDWARE) == 0)
-		{
+	if(pBp){
+		if((pBp->flags & BP_HARDWARE_MASK) == 0){
 			_sw(pBp->inst, pBp->addr);
-		}
-		else
-		{
-			debug_set_hwbreak(0);
+		}else{
+			debug_set_hwbreak(0, pBp->flags);
 		}
 
 		pBp->flags = 0;
@@ -456,15 +426,11 @@ int debugDisableBP(unsigned int addr)
 
 	intc = pspSdkDisableInterrupts();
 	pBp = find_bp(addr);
-	if(pBp)
-	{
-		if((pBp->flags & DEBUG_BP_HARDWARE) == 0)
-		{
+	if(pBp){
+		if((pBp->flags & BP_HARDWARE_MASK) == 0){
 			_sw(pBp->inst, pBp->addr);
-		}
-		else
-		{
-			debug_set_hwbreak(0);
+		}else{
+			debug_set_hwbreak(0, pBp->flags);
 		}
 
 		pBp->flags |= DEBUG_BP_DISABLED;
@@ -485,15 +451,11 @@ int debugEnableBP(unsigned int addr)
 
 	intc = pspSdkDisableInterrupts();
 	pBp = find_bp(addr);
-	if(pBp)
-	{
-		if((pBp->flags & DEBUG_BP_HARDWARE) == 0)
-		{
+	if(pBp){
+		if((pBp->flags & BP_HARDWARE_MASK) == 0){
 			_sw(SW_BREAK_INST, pBp->addr);
-		}
-		else
-		{
-			debug_set_hwbreak(pBp->addr);
+		}else{
+			debug_set_hwbreak(pBp->addr, pBp->flags);
 		}
 
 		pBp->flags &= ~(DEBUG_BP_DISABLED | DEBUG_BP_NEXT_REENABLE);
@@ -515,8 +477,12 @@ void debugPrintBPs(void)
 	{
 		if(g_bps[i].flags & DEBUG_BP_ACTIVE)
 		{
-			SHELL_PRINT("%-2d: Addr:0x%08X Inst:0x%08X Flags:%c%c%c\n", i, g_bps[i].addr, g_bps[i].inst, 
-					g_bps[i].flags & DEBUG_BP_ONESHOT ? 'O' : '-', g_bps[i].flags & DEBUG_BP_HARDWARE ? 'H' : '-',
+			SHELL_PRINT("%-2d: Addr:0x%08X Inst:0x%08X Flags:%c%c%c%c\n", i, g_bps[i].addr, g_bps[i].inst,
+					g_bps[i].flags & DEBUG_BP_ONESHOT ? 'O' : '-',
+					g_bps[i].flags & DEBUG_BP_HARDWARE ? 'H' : '-',
+					g_bps[i].flags & DEBUG_BP_HARDWARE_READ ? 'R' : 
+					g_bps[i].flags & DEBUG_BP_HARDWARE_WRITE ? 'W' : 
+					g_bps[i].flags & DEBUG_BP_HARDWARE_ACCESS ? 'A' : '-',
 					g_bps[i].flags & DEBUG_BP_DISABLED ? 'D' : '-');
 		}
 	}
@@ -746,26 +712,36 @@ void debugHwInit(void)
 	debug_set_env();
 }
 
-static void debug_set_hwbreak(unsigned int addr)
+static void debug_set_hwbreak(unsigned int addr, unsigned int flag)
 {
 	struct HwDebugEnv *pEnv = &psplinkHwContext;
 	
 	debug_get_env();
 
-	if(addr)
-	{
-		pEnv->IBC = 0x12;
+	if(flag&DEBUG_BP_HARDWARE){
+		pEnv->IBC = (addr) ? 0x12 : 0x10 ;
 		pEnv->IBA = addr;
 		pEnv->IBAM = 0;
-	}
-	else
-	{
-		pEnv->IBC = 0x10;
-		pEnv->IBA = 0;
-		pEnv->IBAM = 0;
+	}else{
+		if(addr){
+			pEnv->DBC = 0x00000012;
+			if(flag&(DEBUG_BP_HARDWARE_ACCESS|DEBUG_BP_HARDWARE_READ))
+				pEnv->DBC |= 0x00100000;
+			if(flag&(DEBUG_BP_HARDWARE_ACCESS|DEBUG_BP_HARDWARE_WRITE))
+				pEnv->DBC |= 0x00200000;
+		}else{
+			pEnv->DBC = 0x00000010;
+		}
+		pEnv->DBA = addr;
+		pEnv->DBAM = 0;
+		pEnv->DBD = 0;
+		pEnv->DBDM = 0;
 	}
 	
 	debug_set_env();
+	sceKernelDcacheWritebackInvalidateAll();
+	sceKernelIcacheInvalidateAll();
+	debug_get_env();
 }
 
 /*

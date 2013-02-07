@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/debug.h $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/debug.h $
  * $Id: debug.h 2178 2007-02-15 17:30:31Z tyranid $
  */
 #ifndef __DEBUGINC_H__
@@ -32,7 +32,11 @@ enum DebugBreakpointFlags
 	DEBUG_BP_STEP       = 16,
 	/* Indicates this breakpoint should be reneabled on the next exception */
 	DEBUG_BP_NEXT_REENABLE = 32,
+	DEBUG_BP_HARDWARE_READ = 64,
+	DEBUG_BP_HARDWARE_WRITE = 128,
+	DEBUG_BP_HARDWARE_ACCESS = 256,
 };
+#define BP_HARDWARE_MASK (DEBUG_BP_HARDWARE|DEBUG_BP_HARDWARE_READ|DEBUG_BP_HARDWARE_WRITE|DEBUG_BP_HARDWARE_ACCESS)
 
 struct Breakpoint
 {

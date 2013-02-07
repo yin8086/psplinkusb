@@ -7,8 +7,8 @@
  *
  * Copyright (c) 2006 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/tools/remotejoy/pc/remotejoy.c $
- * $Id: remotejoy.c 2398 2008-06-07 18:57:39Z iwn $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/tools/remotejoy/pc/remotejoy.c $
+ * $Id: remotejoy.c 1985 2006-08-01 20:16:30Z tyranid $
  */
 #include <stdio.h>
 #include <unistd.h>
@@ -32,10 +32,6 @@
 
 #define MAX_AXES_NUM 32767
 #define DIGITAL_TOL   10000
-
-#ifndef SOL_TCP 
-   #define SOL_TCP IPPROTO_TCP 
-#endif
 
 #if defined BUILD_BIGENDIAN || defined _BIG_ENDIAN
 uint16_t swap16(uint16_t i)

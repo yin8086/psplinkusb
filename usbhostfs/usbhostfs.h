@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/usbhostfs/usbhostfs.h $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/usbhostfs/usbhostfs.h $
  * $Id: usbhostfs.h 2263 2007-06-28 20:00:22Z tyranid $
  */
 #ifndef __USBHOSTFS_H__

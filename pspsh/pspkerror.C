@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/pspsh/pspkerror.C $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/pspsh/pspkerror.C $
  * $Id: pspkerror.C 2200 2007-03-08 21:21:20Z tyranid $
  */
 #include "pspkerror.h"

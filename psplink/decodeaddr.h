@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/decodeaddr.h $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/decodeaddr.h $
  * $Id: decodeaddr.h 2301 2007-08-26 13:48:05Z tyranid $
  */
 

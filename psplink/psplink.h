@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/psplink.h $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/psplink.h $
  * $Id: psplink.h 2303 2007-08-26 17:10:21Z tyranid $
  */
 

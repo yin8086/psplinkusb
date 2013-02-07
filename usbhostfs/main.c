@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/usbhostfs/main.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/usbhostfs/main.c $
  * $Id: main.c 2189 2007-02-24 12:16:44Z tyranid $
  */
 #include <pspkernel.h>

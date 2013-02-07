@@ -43,10 +43,6 @@
 #define EVENT_RENDER_FRAME_2  3
 #define EVENT_DISABLE_SCREEN  4
 
-#ifndef SOL_TCP 
-   #define SOL_TCP IPPROTO_TCP 
-#endif
-
 #if defined BUILD_BIGENDIAN || defined _BIG_ENDIAN
 uint16_t swap16(uint16_t i)
 {
@@ -1340,7 +1336,7 @@ void mainloop(void)
 int main(int argc, char **argv)
 {
 	fprintf(stderr, "Remote Joy SDL for PSP (c) TyRaNiD 2k6\n");
-	fprintf(stderr, "Built %s %s - $Revision: 2398 $\n", __DATE__, __TIME__);
+	fprintf(stderr, "Built %s %s - $Revision: 2204 $\n", __DATE__, __TIME__);
 	memset(&g_context, 0, sizeof(g_context));
 	if(parse_args(argc, argv, &g_context.args))
 	{

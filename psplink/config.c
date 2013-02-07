@@ -8,7 +8,7 @@
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  * Copyright (c) 2005 Julian T <lovely@crm114.net>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/config.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/config.c $
  * $Id: config.c 2174 2007-02-08 19:49:27Z tyranid $
  */
 #include <pspkernel.h>

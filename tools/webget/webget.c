@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/tools/webget/webget.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/tools/webget/webget.c $
  * $Id: webget.c 1910 2006-05-14 18:39:19Z tyranid $
  */
 #include <pspkernel.h>

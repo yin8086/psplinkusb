@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/pspsh/pspsh.C $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/pspsh/pspsh.C $
  * $Id: pspsh.C 2200 2007-03-08 21:21:20Z tyranid $
  */
 #include <stdio.h>
@@ -1198,7 +1198,8 @@ int help_cmd(int argc, char **argv)
 				{
 					if(found_cmd[cmd_loop].desc)
 					{
-						fprintf(stderr, "%-10s - %s\n", found_cmd[cmd_loop].name, found_cmd[cmd_loop].desc);
+						fprintf(stderr, "%-10s %-6s - %s\n", 
+							found_cmd[cmd_loop].name, found_cmd[cmd_loop].syn, found_cmd[cmd_loop].desc);
 					}
 				}
 			}

@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/exception.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/exception.c $
  * $Id: exception.c 2316 2007-09-17 18:13:33Z tyranid $
  */
 #include <pspkernel.h>
@@ -469,10 +469,13 @@ struct PsplinkContext* psplinkTrap(struct PsplinkContext *ctx)
 
 	switch(ctx->cont)
 	{
-		case PSP_EXCEPTION_SKIP: skip = 1;
-		case PSP_EXCEPTION_STEP: debugStep(ctx, skip);
-								 break;
-		default: break;
+		case PSP_EXCEPTION_SKIP:
+			skip = 1;
+		case PSP_EXCEPTION_STEP:
+			debugStep(ctx, skip);
+			break;
+		default:
+			break;
 	};
 
 	if(g_currex == ctx)

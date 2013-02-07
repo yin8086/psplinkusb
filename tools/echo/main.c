@@ -8,7 +8,7 @@
  * Copyright (c) 2006 James F
  *
  * $Id: main.c 1952 2006-06-25 15:57:15Z tyranid $
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/tools/echo/main.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/tools/echo/main.c $
  */
 #include <pspkernel.h>
 #include <usbasync.h>

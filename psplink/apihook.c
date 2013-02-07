@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/apihook.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/apihook.c $
  * $Id: apihook.c 2301 2007-08-26 13:48:05Z tyranid $
  */
 #include <pspkernel.h>
@@ -46,6 +46,7 @@ struct SyscallHeader
 #define PARAM_TYPE_OCT 'o'
 #define PARAM_TYPE_STR 's'
 #define PARAM_TYPE_PTR 'p'
+#define PARAM_TYPE_H64 'l'
 
 #define RET_TYPE_VOID  'v'
 #define RET_TYPE_HEX32 'x'
@@ -147,59 +148,63 @@ void *_apiHookHandle(int id, unsigned int *args)
 	if(func)
 	{
 		int i;
-		int j;
+		int p;
 		char str[128];
 		int strleft;
 
-		SHELL_PRINT("Function %s called from thread 0x%08X (RA:0x%08X)\n", g_apihooks[id].name, sceKernelGetThreadId(), sceKernelGetSyscallRA());
-		for(i = 0; i < APIHOOK_MAXPARAM; i++)
+if(strcmp(g_apihooks[id].name, "sceIoOpen")==0){
+	int mode = args[1];
+	if(mode==0x40000001){
+		SHELL_PRINT("sceIoOpen mode 0x40000001 -> 0x00000001\n");
+		mode = 0x00000001;
+		args[1] = mode;
+	}
+}
+
+
+		SHELL_PRINT("TH:0x%08X(RA:0x%08X) ", sceKernelGetThreadId(), sceKernelGetSyscallRA());
+		if(g_apihooks[id].sleep) SHELL_PRINT("[Sleep] ");
+		SHELL_PRINT("%s(", g_apihooks[id].name);
+
+		for(i=0,p=0; p<APIHOOK_MAXPARAM; i++,p++)
 		{
-			if(g_apihooks[id].param[i])
+			if(g_apihooks[id].param[p])
 			{
-				SHELL_PRINT("Arg %d: ", i);
-				switch(g_apihooks[id].param[i])
+				switch(g_apihooks[id].param[p])
 				{
-					case PARAM_TYPE_INT: SHELL_PRINT("%d\n", args[i]);
-							  break;
-					case PARAM_TYPE_HEX: SHELL_PRINT("0x%08X\n", args[i]);
-							  break;
-					case PARAM_TYPE_OCT: SHELL_PRINT("0%o\n", args[i]);
-							  break;
-					case PARAM_TYPE_STR: strleft = memValidate(args[i], MEM_ATTRIB_READ | MEM_ATTRIB_BYTE);
-							  if(strleft == 0)
-							  {
-								  SHELL_PRINT("Invalid pointer 0x%08X\n", args[i]);
-								  break;
-							  }
+					case PARAM_TYPE_INT: SHELL_PRINT("%d, ", args[i]);
+						break;
+					case PARAM_TYPE_PTR:
+					case PARAM_TYPE_HEX: SHELL_PRINT("0x%08X, ", args[i]);
+						break;
+					case PARAM_TYPE_OCT: SHELL_PRINT("0%o, ", args[i]);
+						break;
+					case PARAM_TYPE_H64:
+						if(i&1) i++;
+						SHELL_PRINT("0x%08X_%08X, ", args[i+1], args[i]);
+						i++;
+						break;
+					case PARAM_TYPE_STR:
+						strleft = memValidate(args[i], MEM_ATTRIB_READ | MEM_ATTRIB_BYTE);
+						if(strleft == 0)
+						{
+							 SHELL_PRINT("Invalid pointer 0x%08X\n", args[i]);
+							 break;
+						}
 
-							  if(strleft > (sizeof(str)-1))
-							  {
-								  strleft = sizeof(str) - 1;
-							  }
+						if(strleft > (sizeof(str)-1))
+						{
+							 strleft = sizeof(str) - 1;
+						}
 
-							  strncpy(str, (const char *) args[i], strleft);
-							  str[strleft] = 0;
+						strncpy(str, (const char *) args[i], strleft);
+						str[strleft] = 0;
 
-							  SHELL_PRINT("\"%s\"\n", str);
-							  break;
-					case PARAM_TYPE_PTR: strleft = memValidate(args[i], MEM_ATTRIB_READ | MEM_ATTRIB_BYTE);
-							  if(strleft == 0)
-							  {
-								  SHELL_PRINT("Invalid pointer 0x%08X\n", args[i]);
-								  break;
-							  }
-
-							  strleft = strleft > 32 ? 32 : strleft;
-
-							  SHELL_PRINT("0x%08X - ", args[i]);
-							  for(j = 0; j < strleft; j++)
-							  {
-								  SHELL_PRINT("0x%02X ", _lb(args[i]+j));
-							  }
-							  SHELL_PRINT("\n");
-							  break;
-					default:  SHELL_PRINT("Unknown parameter type '%c'\n", g_apihooks[id].param[i]);
-							  break;
+						SHELL_PRINT("\"%s\", ", str);
+						break;
+					default:
+						SHELL_PRINT("Unknown parameter type '%c'\n", g_apihooks[id].param[p]);
+						break;
 				};
 			}
 			else
@@ -207,12 +212,10 @@ void *_apiHookHandle(int id, unsigned int *args)
 				break;
 			}
 		}
+		SHELL_PRINT(") ");
 
 		if(g_apihooks[id].sleep)
-		{
-			SHELL_PRINT("Sleeping thread 0x%08X\n", sceKernelGetThreadId());
 			sceKernelSleepThread();
-		}
 	}
 
 	psplinkSetK1(k1);
@@ -237,17 +240,17 @@ void _apiHookReturn(int id, unsigned int* ret)
 
 	if(func)
 	{
-		SHELL_PRINT("Function %s returned ", g_apihooks[id].name);
+		SHELL_PRINT("= ");
 		switch(g_apihooks[id].ret)
 		{
 			case RET_TYPE_INT32: SHELL_PRINT("%d\n", ret[0]);
-					  break;
+				break;
 			case RET_TYPE_HEX32: SHELL_PRINT("0x%08X\n", ret[0]);
-								 break;
+				break;
 			case RET_TYPE_HEX64: SHELL_PRINT("0x%08X%08X\n", ret[1], ret[0]);
-					  break;
-			default: SHELL_PRINT("void\n");
-					break;
+				break;
+			default: SHELL_PRINT("\n");
+				break;
 		}
 
 		if(g_apihooks[id].sleep)

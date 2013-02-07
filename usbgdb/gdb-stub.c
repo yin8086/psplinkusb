@@ -8,7 +8,7 @@
  * Copyright (c) 2005 Julian T <lovely@crm114.net>
  * Copyright (c) 2005 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/usbgdb/gdb-stub.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/usbgdb/gdb-stub.c $
  * $Id: gdb-stub.c 2179 2007-02-15 17:38:02Z tyranid $
  */
 /* Note: there is the odd small bit which comes from the gdb stubs/linux mips stub */

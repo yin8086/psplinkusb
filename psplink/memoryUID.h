@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2005 John_K
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/psplink/memoryUID.h $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/psplink/memoryUID.h $
  * $Id: memoryUID.h 2115 2006-12-30 14:50:17Z tyranid $
  */
 #ifndef __MEMORYUID_H__

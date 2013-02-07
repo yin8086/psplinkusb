@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/usbhostfs/usbasync.h $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/usbhostfs/usbasync.h $
  * $Id: usbasync.h 2177 2007-02-15 17:28:02Z tyranid $
  */
 #ifndef __USBASYNC_H__

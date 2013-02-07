@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/pspsh/disasm.C $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/pspsh/disasm.C $
  * $Id: disasm.C 2205 2007-03-12 17:34:43Z tyranid $
  */
 

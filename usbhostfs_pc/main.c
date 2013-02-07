@@ -38,11 +38,6 @@
 #ifdef __CYGWIN__
 #include <sys/vfs.h>
 #define NO_UID_CHECK
-/* Define out set* and get* calls for cygwin as they are unnecessary and can cause issues */
-#define seteuid(x)
-#define setegid(x)
-#define getuid()
-#define getgid()
 #else
 #include <sys/statvfs.h>
 #endif
@@ -3116,7 +3111,7 @@ int main(int argc, char **argv)
 	int i;
 
 	printf("USBHostFS (c) TyRaNiD 2k6\n");
-	printf("Built %s %s - $Revision: 2368 $\n", __DATE__, __TIME__);
+	printf("Built %s %s - $Revision: 2300 $\n", __DATE__, __TIME__);
 
 	if(parse_args(argc, argv))
 	{

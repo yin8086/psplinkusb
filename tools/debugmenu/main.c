@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2006 James F <tyranid@gmail.com>
  *
- * $HeadURL: svn://svn.ps2dev.org/psp/trunk/psplinkusb/tools/debugmenu/main.c $
+ * $HeadURL: svn://svn.pspdev.org/psp/trunk/psplinkusb/tools/debugmenu/main.c $
  * $Id: main.c 2018 2006-10-07 16:54:19Z tyranid $
  */
 #include <pspkernel.h>
@@ -160,8 +160,23 @@ int main_thread(SceSize args, void *argp)
 		goto error;
 	}
 
-	//sceCtrlRegisterButtonCallback(0, PSP_CTRL_HOME, button_callback, NULL);
-	sceCtrlRegisterButtonCallback(3, TRIGGER, button_callback, NULL);
+
+	//sceDisplaySetFrameBufferInternal(0, vram, 512, 0, 1);
+{
+	int i=0;
+	//short *fb = (short*)vram;
+	short *fb = (short*)0x44000000;
+
+	for(i=0; i<256; i++){
+		fb[i] = i;
+	}
+	vram = (void*)0x44000000;
+}
+	//pspDebugScreenInitEx(vram, PSP_DISPLAY_PIXEL_FORMAT_8888, 0);
+	//redraw_menu(0);
+
+	sceCtrlRegisterButtonCallback(0, PSP_CTRL_HOME, button_callback, NULL);
+	//sceCtrlRegisterButtonCallback(3, TRIGGER, button_callback, NULL);
 	while(1)
 	{
 		unsigned int bits;
@@ -173,7 +188,8 @@ int main_thread(SceSize args, void *argp)
 		sceCtrlSetButtonMasks(0xFFFF, 1);  // Mask lower 16bits
 		sceCtrlSetButtonMasks(0x10000, 2); // Always return HOME key
 		sceDisplaySetFrameBufferInternal(0, vram, 512, 0, 1);
-		pspDebugScreenInitEx(vram, 0, 0);
+		//pspDebugScreenInitEx(vram, 0, 0);
+		pspDebugScreenInitEx(vram, PSP_DISPLAY_PIXEL_FORMAT_8888, 0);
 		do_menu();
 		sceDisplaySetFrameBufferInternal(0, 0, 512, 0, 1);
 		sceCtrlSetButtonMasks(0x10000, 0); // Unset HOME key
