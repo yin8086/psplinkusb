@@ -3796,18 +3796,6 @@ static int debugreg_cmd(int argc, char **argv, unsigned int *vRet)
 	return CMD_OK;
 }
 
-#undef BACKTRACE_DEBUG
-
-static int backtrace_cmd(int argc, char **argv, unsigned int *vRet)
-{
-#ifdef BACKTRACE_DEBUG
-	SHELL_PRINT("[Debug] [%s] [%d] \n", __FUNCTION__, __LINE__);
-#endif /* BACKTRACE_DEBUG */
-	stacktracePrint(NULL);
-	return CMD_OK;
-}
-
-	
 const char* PspInterruptNames[67] = {//67 interrupts
 	0, 0, 0, 0, "GPIO", "ATA_ATAPI", "UmdMan", "MScm0",
 	"Wlan", 0, "Audio", 0, "I2C", 0, "SIRCS_IrDA",

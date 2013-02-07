@@ -20,7 +20,6 @@
 #include "util.h"
 #include "psplink.h"
 #include "debug.h"
-#include "trap.h"
 
 struct PsplinkContext *g_currex = NULL;
 struct PsplinkContext *g_list = NULL;
@@ -525,27 +524,3 @@ void exceptionInit(void)
 	g_list = g_psplinkContext;
 	sceKernelRegisterDefaultExceptionHandler((void*) psplinkDefaultExHandler);
 }
-
-extern int shprintfex(const char *fmt, ...);
-void stacktracePrint(struct PsplinkContext *ctx)
-{
-/*	SceModule *pMod;
-	SceKernelModuleInfo mod;
-	SceKernelThreadInfo thread;
-	unsigned int addr;*/
-
-	if(ctx == NULL)
-	{
-		ctx = g_currex;
-	}
-
-	if(ctx)
-	{
-		stacktrace_subr(ctx->regs.r[4], ctx->regs.r[5], ctx->regs.r[6], ctx->regs.r[7], ctx->regs.epc, ctx->regs.r[29], ctx->regs.r[30], ctx->regs.r[31], shprintfex);
-	}
-	else
-	{
-		SHELL_PRINT("No exception occurred\n");
-	}
-}
-		
